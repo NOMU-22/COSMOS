@@ -1,0 +1,18 @@
+{
+  "/api/admin/zones/route": "app/api/admin/zones/route.js",
+  "/api/admin/customers/route": "app/api/admin/customers/route.js",
+  "/api/public/data/route": "app/api/public/data/route.js",
+  "/api/admin/bookings/route": "app/api/admin/bookings/route.js",
+  "/api/admin/pricing/route": "app/api/admin/pricing/route.js",
+  "/api/auth/logout/route": "app/api/auth/logout/route.js",
+  "/api/admin/offers/route": "app/api/admin/offers/route.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/page": "app/page.js",
+  "/community/page": "app/community/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/customers/page": "app/admin/customers/page.js",
+  "/admin/bookings/page": "app/admin/bookings/page.js",
+  "/admin/zones/page": "app/admin/zones/page.js",
+  "/admin/pricing/page": "app/admin/pricing/page.js",
+  "/admin/offers/page": "app/admin/offers/page.js"
+}

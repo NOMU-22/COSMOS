@@ -1,0 +1,545 @@
+import fs from "fs";
+import path from "path";
+import bcrypt from "bcryptjs";
+import {
+  User,
+  VerificationOtp,
+  GamingZone,
+  Station,
+  Game,
+  PricingTier,
+  Offer,
+  EventTournament,
+  EventRegistration,
+  Booking,
+  Review,
+  GalleryImage,
+  BusinessSettings,
+} from "@/types";
+
+interface DatabaseSchema {
+  users: User[];
+  verification_otps: VerificationOtp[];
+  gaming_zones: GamingZone[];
+  stations: Station[];
+  games: Game[];
+  pricing_tiers: PricingTier[];
+  offers: Offer[];
+  events: EventTournament[];
+  event_registrations: EventRegistration[];
+  bookings: Booking[];
+  reviews: Review[];
+  gallery_images: GalleryImage[];
+  business_settings: BusinessSettings[];
+}
+
+const dbDir = path.join(process.cwd(), ".data");
+const dbPath = path.join(dbDir, "cosmos_data.json");
+
+function ensureDbDir() {
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+}
+
+function readData(): DatabaseSchema {
+  ensureDbDir();
+  if (!fs.existsSync(dbPath)) {
+    const initialData = getInitialSeedData();
+    saveData(initialData);
+    return initialData;
+  }
+  try {
+    const raw = fs.readFileSync(dbPath, "utf-8");
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Error reading database, restoring seed data:", error);
+    const initialData = getInitialSeedData();
+    saveData(initialData);
+    return initialData;
+  }
+}
+
+function saveData(data: DatabaseSchema) {
+  ensureDbDir();
+  const tempPath = `${dbPath}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), "utf-8");
+  fs.renameSync(tempPath, dbPath);
+}
+
+export function getInitialSeedData(): DatabaseSchema {
+  // Real Admin and Customer password hashes
+  const adminPasswordHash = bcrypt.hashSync("AdminCosmos2026!", 10);
+  const customerPasswordHash = bcrypt.hashSync("GamerPass123!", 10);
+
+  const businessSettings: BusinessSettings = {
+    id: "settings-1",
+    businessName: "Cosmos Gaming Mumbai",
+    tagline: "Play • Compete • Win • Repeat",
+    address: "Cosmos Gaming Centre, Bandra East",
+    city: "Mumbai",
+    state: "Maharashtra",
+    postalCode: "400051",
+    phone: "+91 98200 12345",
+    whatsapp: "+91 98200 12345",
+    email: "contact@cosmosgamingmumbai.com",
+    instagram: "https://www.instagram.com/cosmosgamingmumbai/",
+    googleMapsUrl: "https://maps.google.com/?q=Bandra+East+Mumbai",
+    openingTime: "11:00 AM",
+    closingTime: "11:00 PM",
+    operatingDays: "Monday - Sunday (All 7 Days)",
+    isSlotBookingActive: true,
+    announcementText: "🔥 COSMOS FC 26 MONSOON CUP IS LIVE! Registrations are open now with ₹15,000 in Scholarship Prizes!",
+    announcementActive: true,
+  };
+
+  const users: User[] = [
+    {
+      id: "user-admin-1",
+      name: "Cosmos Admin",
+      email: "admin@cosmosgaming.com",
+      phone: "+919820012345",
+      passwordHash: adminPasswordHash,
+      role: "ADMIN",
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      cosmosXp: 5000,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "user-customer-1",
+      name: "Aryan Sharma",
+      email: "aryan@gamer.com",
+      phone: "+919876543210",
+      passwordHash: customerPasswordHash,
+      role: "CUSTOMER",
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      cosmosXp: 450,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  const gaming_zones: GamingZone[] = [
+    {
+      id: "zone-ps5",
+      name: "PlayStation 5 (PS5) Arena",
+      slug: "ps5-arena",
+      description: "Experience 4K ultra-smooth console gaming on PlayStation 5 with DualSense haptic feedback and high-refresh gaming displays.",
+      specs: "Sony PlayStation 5 Consoles • 4K HDR 120Hz Displays • DualSense Wireless Controllers • Pulse 3D Audio",
+      hourlyRate: 149,
+      imageUrl: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=1200&q=80",
+      totalStations: 6,
+      popularGames: "FC 26 / FIFA 26, WWE 2K26, Tekken 8, GTA 5, Mortal Kombat 1, Spider-Man 2",
+      isActive: true,
+      displayOrder: 1,
+    },
+    {
+      id: "zone-pc",
+      name: "High-End PC Esports Battleground",
+      slug: "pc-esports",
+      description: "High-FPS competitive esports battle stations with mechanical RGB peripherals and high-refresh esports monitors.",
+      specs: "Dedicated Esports Gaming Rigs • 240Hz High-Refresh Gaming Monitors • Mechanical RGB Keyboards • Ultra-light Gaming Mice",
+      hourlyRate: 129,
+      imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+      totalStations: 8,
+      popularGames: "Valorant, GTA 5 RP, CS2, Free Fire PC, Apex Legends, Fortnite",
+      isActive: true,
+      displayOrder: 2,
+    },
+    {
+      id: "zone-vr",
+      name: "VR Immersive Arena + Gun Setup",
+      slug: "vr-immersive",
+      description: "Full 360-degree virtual reality arena with specialized VR gun controllers for realistic tactical and shooter gameplay.",
+      specs: "Next-Gen VR Headsets • Specialized Haptic VR Gun Peripherals • 360° Room-Scale Tracking Sensors",
+      hourlyRate: 199,
+      imageUrl: "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=1200&q=80",
+      totalStations: 2,
+      popularGames: "Tactical VR Shooters, Beat Saber, Superhot VR, Half-Life: Alyx",
+      isActive: true,
+      displayOrder: 3,
+    },
+    {
+      id: "zone-racing",
+      name: "Steering Wheel Racing Simulator",
+      slug: "racing-simulator",
+      description: "Professional force-feedback steering wheel and pedal rig for realistic motorsport, rally, and drift simulation.",
+      specs: "Force-Feedback Racing Wheel • Responsive Pedal System • Ergonomic Bucket Racing Cockpit",
+      hourlyRate: 179,
+      imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+      totalStations: 2,
+      popularGames: "F1 24, Forza Horizon 5, Assetto Corsa, Gran Turismo",
+      isActive: true,
+      displayOrder: 4,
+    },
+  ];
+
+  const stations: Station[] = [
+    { id: "station-ps5-1", zoneId: "zone-ps5", stationNumber: 1, name: "PS5 Station #01", status: "AVAILABLE" },
+    { id: "station-ps5-2", zoneId: "zone-ps5", stationNumber: 2, name: "PS5 Station #02", status: "AVAILABLE" },
+    { id: "station-ps5-3", zoneId: "zone-ps5", stationNumber: 3, name: "PS5 Station #03", status: "AVAILABLE" },
+    { id: "station-ps5-4", zoneId: "zone-ps5", stationNumber: 4, name: "PS5 Station #04", status: "AVAILABLE" },
+    { id: "station-ps5-5", zoneId: "zone-ps5", stationNumber: 5, name: "PS5 Station #05", status: "AVAILABLE" },
+    { id: "station-ps5-6", zoneId: "zone-ps5", stationNumber: 6, name: "PS5 Station #06", status: "AVAILABLE" },
+    { id: "station-pc-1", zoneId: "zone-pc", stationNumber: 1, name: "PC Esports Rig #01", status: "AVAILABLE" },
+    { id: "station-pc-2", zoneId: "zone-pc", stationNumber: 2, name: "PC Esports Rig #02", status: "AVAILABLE" },
+    { id: "station-pc-3", zoneId: "zone-pc", stationNumber: 3, name: "PC Esports Rig #03", status: "AVAILABLE" },
+    { id: "station-pc-4", zoneId: "zone-pc", stationNumber: 4, name: "PC Esports Rig #04", status: "AVAILABLE" },
+    { id: "station-pc-5", zoneId: "zone-pc", stationNumber: 5, name: "PC Esports Rig #05", status: "AVAILABLE" },
+    { id: "station-pc-6", zoneId: "zone-pc", stationNumber: 6, name: "PC Esports Rig #06", status: "AVAILABLE" },
+    { id: "station-pc-7", zoneId: "zone-pc", stationNumber: 7, name: "PC Esports Rig #07", status: "AVAILABLE" },
+    { id: "station-pc-8", zoneId: "zone-pc", stationNumber: 8, name: "PC Esports Rig #08", status: "AVAILABLE" },
+    { id: "station-vr-1", zoneId: "zone-vr", stationNumber: 1, name: "VR Gun Pod #01", status: "AVAILABLE" },
+    { id: "station-vr-2", zoneId: "zone-vr", stationNumber: 2, name: "VR Gun Pod #02", status: "AVAILABLE" },
+    { id: "station-sim-1", zoneId: "zone-racing", stationNumber: 1, name: "Racing Cockpit #01", status: "AVAILABLE" },
+    { id: "station-sim-2", zoneId: "zone-racing", stationNumber: 2, name: "Racing Cockpit #02", status: "AVAILABLE" },
+  ];
+
+  const games: Game[] = [
+    { id: "game-1", title: "EA Sports FC 26", genre: "Sports / Football", zoneType: "PS5", coverUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+    { id: "game-2", title: "Valorant", genre: "Tactical FPS", zoneType: "PC", coverUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+    { id: "game-3", title: "Grand Theft Auto V", genre: "Action / Open World", zoneType: "ALL", coverUrl: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+    { id: "game-4", title: "Tekken 8", genre: "Fighting / Esports", zoneType: "PS5", coverUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+    { id: "game-5", title: "WWE 2K26", genre: "Sports / Combat", zoneType: "PS5", coverUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80", isPopular: false, isActive: true },
+    { id: "game-6", title: "Counter-Strike 2", genre: "Competitive FPS", zoneType: "PC", coverUrl: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+    { id: "game-7", title: "F1 24 & Forza Horizon 5", genre: "Motorsport Simulation", zoneType: "RACING", coverUrl: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+    { id: "game-8", title: "VR Tactical Strike & Beat Saber", genre: "VR Action", zoneType: "VR", coverUrl: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=600&q=80", isPopular: true, isActive: true },
+  ];
+
+  const pricing_tiers: PricingTier[] = [
+    {
+      id: "price-pc-1hr",
+      title: "PC Quick Session",
+      zoneType: "High-End PC Esports",
+      durationHours: 1,
+      price: 129,
+      originalPrice: 150,
+      tag: "Standard",
+      features: JSON.stringify(["240Hz Esports Display", "Mechanical RGB Peripherals", "Discord & Steam Ready", "Zero Input Lag"]),
+      isFeatured: false,
+      isActive: true,
+    },
+    {
+      id: "price-pc-3hr",
+      title: "PC Grind Pass (3 Hours)",
+      zoneType: "High-End PC Esports",
+      durationHours: 3,
+      price: 329,
+      originalPrice: 387,
+      tag: "Most Popular",
+      features: JSON.stringify(["3 Full Hours Gaming", "Save ₹58 on Hourly Rate", "Complimentary High-Speed LAN", "Cosmos XP Points Boost"]),
+      isFeatured: true,
+      isActive: true,
+    },
+    {
+      id: "price-ps5-1hr",
+      title: "PS5 1v1 Arena",
+      zoneType: "PlayStation 5 (PS5)",
+      durationHours: 1,
+      price: 149,
+      originalPrice: 180,
+      tag: "Console Match",
+      features: JSON.stringify(["Sony PS5 Console", "4K 120Hz Ultra-HD Display", "2 DualSense Controllers", "All Top Sports & Fighting Games"]),
+      isFeatured: false,
+      isActive: true,
+    },
+    {
+      id: "price-ps5-3hr",
+      title: "PS5 Squad Marathon (3 Hours)",
+      zoneType: "PlayStation 5 (PS5)",
+      durationHours: 3,
+      price: 399,
+      originalPrice: 447,
+      tag: "Best Value",
+      features: JSON.stringify(["3 Continuous Hours", "Up to 4 Controllers Available", "Snack & Drink Assistance", "Free Tournament Practice"]),
+      isFeatured: true,
+      isActive: true,
+    },
+    {
+      id: "price-vr-sim",
+      title: "VR Gun / Racing Sim Rig",
+      zoneType: "VR & Simulator Cockpit",
+      durationHours: 1,
+      price: 199,
+      originalPrice: 249,
+      tag: "Full Immersion",
+      features: JSON.stringify(["360° VR or Force Feedback Rig", "Haptic VR Gun / Wheel Pedals", "Full Staff Calibration", "Ultra-Realistic Immersion"]),
+      isFeatured: false,
+      isActive: true,
+    },
+  ];
+
+  const offers: Offer[] = [
+    {
+      id: "offer-1",
+      title: "Beat the House Pro Challenge",
+      code: "BEATTHEPRO",
+      description: "Challenge our house pro in FC 26 or Tekken. Win the match and your 1st hour is 100% FREE!",
+      discountType: "PERCENTAGE",
+      discountValue: 100,
+      applicableZone: "zone-ps5",
+      minDurationHours: 1,
+      startDate: "2026-09-01",
+      endDate: "2026-10-31",
+      terms: "1 match attempt per customer. Valid on PS5 arena games. Must inform front desk before starting.",
+      status: "PUBLISHED",
+      bannerUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      id: "offer-2",
+      title: "Monsoon Squad 20% Off",
+      code: "SQUAD20",
+      description: "Book 3 or more stations simultaneously with your squad and get 20% flat discount on total booking value!",
+      discountType: "PERCENTAGE",
+      discountValue: 20,
+      applicableZone: null,
+      minDurationHours: 2,
+      startDate: "2026-09-01",
+      endDate: "2026-10-15",
+      terms: "Minimum 3 players / stations required. Applicable on PC and PS5 zones.",
+      status: "PUBLISHED",
+      bannerUrl: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      id: "offer-3",
+      title: "Cosmos Monsoon ₹100 Flat Voucher",
+      code: "MONSOON100",
+      description: "Flat ₹100 discount on any gaming session of 3 hours or longer during monsoon season.",
+      discountType: "FLAT",
+      discountValue: 100,
+      applicableZone: null,
+      minDurationHours: 3,
+      startDate: "2026-09-01",
+      endDate: "2026-10-31",
+      terms: "Minimum 3 hours duration per booking.",
+      status: "PUBLISHED",
+      bannerUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
+    },
+  ];
+
+  const events: EventTournament[] = [
+    {
+      id: "event-fc26-monsoon",
+      title: "COSMOS FC 26 MONSOON CUP",
+      game: "EA Sports FC 26 (PS5)",
+      category: "TOURNAMENT",
+      eventDate: "2026-09-28",
+      startTime: "13:30",
+      endTime: "19:00",
+      entryFee: 299,
+      prizePool: "🏆 Winner: ₹10,000 Scholarship | 🥈 Runner-Up: ₹5,000 Scholarship + Membership + Official Merch",
+      maxParticipants: 32,
+      currentParticipants: 18,
+      format: "PS5 | 1v1 | Single Elimination Knockout",
+      rules: "6 min halves. Default competitive squads. Tactical defending mandatory. Referee decision is final.",
+      bannerUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80",
+      status: "REGISTRATION_OPEN",
+    },
+    {
+      id: "event-val-night",
+      title: "Cosmos Valorant 5v5 Community Clash",
+      game: "Valorant (PC)",
+      category: "LAN_PARTY",
+      eventDate: "2026-10-04",
+      startTime: "15:00",
+      endTime: "21:00",
+      entryFee: 500,
+      prizePool: "🏆 1st Place: ₹15,000 Cash + 20 Hrs Cafe Credits",
+      maxParticipants: 16,
+      currentParticipants: 8,
+      format: "PC | 5v5 Team Tournament | Best of 1 & Finals Bo3",
+      rules: "Competitive standard map pool. Anti-cheat mandatory. Full LAN environment.",
+      bannerUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+      status: "REGISTRATION_OPEN",
+    },
+  ];
+
+  const bookings: Booking[] = [
+    {
+      id: "booking-sample-1",
+      bookingRef: "CGM-2026-8921",
+      userId: "user-customer-1",
+      customerName: "Aryan Sharma",
+      customerPhone: "+919876543210",
+      customerEmail: "aryan@gamer.com",
+      zoneId: "zone-ps5",
+      zoneName: "PlayStation 5 (PS5) Arena",
+      stationId: "station-ps5-1",
+      stationNumber: 1,
+      bookingDate: new Date().toISOString().split("T")[0],
+      startTime: "16:00",
+      endTime: "18:00",
+      durationHours: 2,
+      playersCount: 2,
+      subtotal: 298,
+      discountAmount: 0,
+      totalAmount: 298,
+      appliedOfferCode: null,
+      paymentMethod: "UPI",
+      paymentStatus: "COMPLETED",
+      bookingStatus: "CONFIRMED",
+      specialRequests: "Two controllers for FC 26 please",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  const reviews: Review[] = [
+    {
+      id: "rev-1",
+      authorName: "Rohan Patel",
+      rating: 5,
+      comment: "Best gaming lounge in Bandra East! The PS5 setups are super crisp with zero latency and the 1v1 FC 26 tournaments are thrilling.",
+      gamePlayed: "FC 26 (PS5)",
+      isVerified: true,
+      status: "APPROVED",
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: "rev-2",
+      authorName: "Kabir M.",
+      rating: 5,
+      comment: "Insane PC specs for Valorant. 240Hz monitors made aiming so crisp. The vibe, air conditioning, and liquid glass style lighting are unmatched.",
+      gamePlayed: "Valorant (PC)",
+      isVerified: true,
+      status: "APPROVED",
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: "rev-3",
+      authorName: "Vikram Sengupta",
+      rating: 5,
+      comment: "Tried the VR Gun setup for the first time—absolutely mind-blowing haptics and accuracy. Staff is super helpful!",
+      gamePlayed: "VR Gun Shooter",
+      isVerified: true,
+      status: "APPROVED",
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  const gallery_images: GalleryImage[] = [
+    {
+      id: "gal-1",
+      title: "PlayStation 5 Battle Stations",
+      imageUrl: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=1200&q=80",
+      category: "PS5",
+      displayOrder: 1,
+      isPublished: true,
+    },
+    {
+      id: "gal-2",
+      title: "High-FPS PC Esports Arena",
+      imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+      category: "PC",
+      displayOrder: 2,
+      isPublished: true,
+    },
+    {
+      id: "gal-3",
+      title: "VR Gun Immersion Setup",
+      imageUrl: "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=1200&q=80",
+      category: "VR",
+      displayOrder: 3,
+      isPublished: true,
+    },
+    {
+      id: "gal-4",
+      title: "Force-Feedback Racing Simulator",
+      imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+      category: "SIMULATOR",
+      displayOrder: 4,
+      isPublished: true,
+    },
+  ];
+
+  return {
+    users,
+    verification_otps: [],
+    gaming_zones,
+    stations,
+    games,
+    pricing_tiers,
+    offers,
+    events,
+    event_registrations: [],
+    bookings,
+    reviews,
+    gallery_images,
+    business_settings: [businessSettings],
+  };
+}
+
+// Typed Database API Wrapper
+export const db = {
+  findMany<K extends keyof DatabaseSchema>(
+    table: K,
+    filterFn?: (item: DatabaseSchema[K][number]) => boolean
+  ): DatabaseSchema[K] {
+    const data = readData();
+    const items = data[table] || [];
+    if (!filterFn) return items as DatabaseSchema[K];
+    return (items as any[]).filter(filterFn) as DatabaseSchema[K];
+  },
+
+  findOne<K extends keyof DatabaseSchema>(
+    table: K,
+    filterFn: (item: DatabaseSchema[K][number]) => boolean
+  ): DatabaseSchema[K][number] | null {
+    const data = readData();
+    const items = data[table] || [];
+    const found = (items as any[]).find(filterFn);
+    return found || null;
+  },
+
+  insert<K extends keyof DatabaseSchema>(
+    table: K,
+    item: DatabaseSchema[K][number]
+  ): DatabaseSchema[K][number] {
+    const data = readData();
+    if (!data[table]) {
+      (data as any)[table] = [];
+    }
+    (data[table] as any[]).push(item);
+    saveData(data);
+    return item;
+  },
+
+  update<K extends keyof DatabaseSchema>(
+    table: K,
+    id: string,
+    updates: Partial<DatabaseSchema[K][number]>
+  ): DatabaseSchema[K][number] | null {
+    const data = readData();
+    const items = (data[table] || []) as any[];
+    const index = items.findIndex((i) => i.id === id);
+    if (index === -1) return null;
+
+    items[index] = { ...items[index], ...updates, updatedAt: new Date().toISOString() };
+    saveData(data);
+    return items[index];
+  },
+
+  delete<K extends keyof DatabaseSchema>(table: K, id: string): boolean {
+    const data = readData();
+    const items = (data[table] || []) as any[];
+    const index = items.findIndex((i) => i.id === id);
+    if (index === -1) return false;
+
+    items.splice(index, 1);
+    saveData(data);
+    return true;
+  },
+
+  count<K extends keyof DatabaseSchema>(
+    table: K,
+    filterFn?: (item: DatabaseSchema[K][number]) => boolean
+  ): number {
+    const items = this.findMany(table, filterFn);
+    return items.length;
+  },
+};
+
+export default db;
