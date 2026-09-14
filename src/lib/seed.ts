@@ -25,12 +25,16 @@ function insertOrIgnore(table: string, columns: string[], values: any[]) {
 function seedBusinessInfo() {
   const name = "Cosmos Gaming Centre";
   const tagline = "Play • Compete • Win • Repeat";
-  const address = "Bandra East, Mumbai, Maharashtra, India";
+  const address = "Office no 23, New Shopping Centre, Government Colony, Bandra East, Mumbai, Maharashtra 400051";
   const description = "Mumbai's ultimate gaming spot offering high‑end PC, PS5, VR, and racing simulator experiences.";
+  const googleMapsUrl = "https://maps.google.com/?q=Office+no+23+New+Shopping+Centre+Government+Colony+Bandra+East+Mumbai+Maharashtra+400051";
+  const googleMapsEmbed = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.9258768!2d72.8483!3d19.0548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c9d8e2d5f5e1%3A0xa2d4f8c3b1e69045!2sNew%20Shopping%20Centre%2C%20Government%20Colony%2C%20Bandra%20East%2C%20Mumbai%2C%20Maharashtra%20400051!5e0!3m2!1sen!2sin!4v1726306000000!5m2!1sen!2sin";
   insertOrIgnore("business_settings", ["key", "value"], ["name", name]);
   insertOrIgnore("business_settings", ["key", "value"], ["tagline", tagline]);
   insertOrIgnore("business_settings", ["key", "value"], ["address", address]);
   insertOrIgnore("business_settings", ["key", "value"], ["description", description]);
+  insertOrIgnore("business_settings", ["key", "value"], ["googleMapsUrl", googleMapsUrl]);
+  insertOrIgnore("business_settings", ["key", "value"], ["googleMapsEmbed", googleMapsEmbed]);
 }
 
 // Seed gaming zones

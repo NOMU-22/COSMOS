@@ -11,12 +11,12 @@ export default function LocationSection() {
   const { settings } = useData();
 
   const businessName = settings?.businessName || "Cosmos Gaming Mumbai";
-  const address = settings?.address || "Cosmos Gaming Centre, Bandra East, Mumbai, Maharashtra 400051";
+  const address = settings?.address || "Office no 23, New Shopping Centre, Government Colony, Bandra East, Mumbai, Maharashtra 400051";
   const phone = settings?.phone || "+91 98200 12345";
   const whatsapp = settings?.whatsapp || "+91 98200 12345";
   const openingHours = `${settings?.openingTime || "11:00 AM"} – ${settings?.closingTime || "11:00 PM"}`;
   const days = settings?.operatingDays || "Monday – Sunday (All 7 Days)";
-  const mapsUrl = settings?.googleMapsUrl || "https://maps.google.com/?q=Bandra+East+Mumbai";
+  const mapsUrl = settings?.googleMapsUrl || "https://maps.google.com/?q=Office+no+23+New+Shopping+Centre+Government+Colony+Bandra+East+Mumbai+Maharashtra+400051";
   const instagramUrl = settings?.instagram || "https://www.instagram.com/cosmosgamingmumbai/";
 
   return (
@@ -34,7 +34,7 @@ export default function LocationSection() {
           Location & Contact
         </h2>
         <p className="text-sm text-slate-300">
-          Conveniently located in Bandra East, Mumbai. Easy access, comfortable air-conditioned gaming environment, and high-speed LAN.
+          Located at Office no 23, New Shopping Centre, Government Colony, Bandra East, Mumbai 400051. Easy access, air-conditioned environment, and high-speed LAN.
         </p>
       </div>
 
@@ -147,14 +147,14 @@ export default function LocationSection() {
         <GlassCard className="!p-0 overflow-hidden border-white/10 relative min-h-[380px] flex flex-col justify-end">
           <div className="absolute inset-0 bg-[#0e0e18]">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.835497426861!2d72.8465!3d19.0596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c8e123456789%3A0x123456789abcdef!2sBandra%20East%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.9258768!2d72.8483!3d19.0548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c9d8e2d5f5e1%3A0xa2d4f8c3b1e69045!2sNew%20Shopping%20Centre%2C%20Government%20Colony%2C%20Bandra%20East%2C%20Mumbai%2C%20Maharashtra%20400051!5e0!3m2!1sen!2sin!4v1726306000000!5m2!1sen!2sin"
               width="100%"
               height="100%"
               style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%)" }}
               allowFullScreen={false}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Cosmos Gaming Bandra East Mumbai Map"
+              title="Cosmos Gaming - Office no 23, New Shopping Centre, Government Colony, Bandra East, Mumbai 400051"
             />
           </div>
 
@@ -164,7 +164,7 @@ export default function LocationSection() {
                 <p className="text-xs font-bold text-white font-['Rajdhani',sans-serif]">
                   COSMOS GAMING CENTRE
                 </p>
-                <p className="text-[11px] text-slate-400">Bandra East, Mumbai • Landmark Area</p>
+                <p className="text-[11px] text-slate-400">Office 23, New Shopping Centre, Govt Colony, Bandra East • 400051</p>
               </div>
               <a
                 href={mapsUrl}

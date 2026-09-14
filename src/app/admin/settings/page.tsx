@@ -18,6 +18,7 @@ export default function AdminSettingsPage() {
     openingTime: "",
     closingTime: "",
     tagline: "",
+    googleMapsUrl: "",
   });
 
   const fetchSettings = async () => {
@@ -35,6 +36,7 @@ export default function AdminSettingsPage() {
           openingTime: data.settings.openingTime || "",
           closingTime: data.settings.closingTime || "",
           tagline: data.settings.tagline || "",
+          googleMapsUrl: data.settings.googleMapsUrl || "",
         });
       }
     } catch (error) {
@@ -92,6 +94,11 @@ export default function AdminSettingsPage() {
             <p className="text-white"><strong>Phone:</strong> {settings.phone}</p>
             <p className="text-white"><strong>Opening Time:</strong> {settings.openingTime}</p>
             <p className="text-white"><strong>Closing Time:</strong> {settings.closingTime}</p>
+            {settings.googleMapsUrl && (
+              <p className="text-white"><strong>Google Maps URL:</strong>{" "}
+                <a href={settings.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 underline break-all">{settings.googleMapsUrl}</a>
+              </p>
+            )}
           </div>
         </GlassCard>
       )}
@@ -169,6 +176,16 @@ export default function AdminSettingsPage() {
                   rows={2}
                   value={formData.tagline}
                   onChange={e => setFormData({ ...formData, tagline: e.target.value })}
+                  className="glass-input"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Google Maps URL (for "Get Directions" link)</label>
+                <input
+                  type="url"
+                  placeholder="https://maps.google.com/?q=..."
+                  value={formData.googleMapsUrl}
+                  onChange={e => setFormData({ ...formData, googleMapsUrl: e.target.value })}
                   className="glass-input"
                 />
               </div>
