@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    db.insert("reviews", newReview);
+    await db.insert("reviews", newReview);
 
     return NextResponse.json({
       success: true,

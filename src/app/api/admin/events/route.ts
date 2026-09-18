@@ -5,8 +5,8 @@ import { EventTournament } from "@/types";
 
 export async function GET() {
   try {
-    const events = db.findMany("events");
-    const registrations = db.findMany("event_registrations");
+    const events = await db.findMany("events");
+    const registrations = await db.findMany("event_registrations");
     return NextResponse.json({ events, registrations });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 });
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       status: status || "REGISTRATION_OPEN",
     };
 
-    db.insert("events", newEvent);
+    await db.insert("events", newEvent);
     return NextResponse.json({ success: true, event: newEvent });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to create event" }, { status: 500 });
@@ -54,7 +54,7 @@ export async function PUT(request: Request) {
     const { id, ...updates } = await request.json();
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    const updated = db.update("events", id, updates);
+    const updated = await db.update("events", id, updates);
     return NextResponse.json({ success: true, event: updated });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to update event" }, { status: 500 });
@@ -70,10 +70,10 @@ export async function DELETE(request: Request) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    db.delete("events", id);
-    const regs = db.findMany("event_registrations", (r) => r.eventId === id);
+    await db.delete("events", id);
+    const regs = await db.findMany("event_registrations", (r) => r.eventId === id);
     for (const r of regs) {
-      db.delete("event_registrations", r.id);
+      await db.delete("event_registrations", r.id);
     }
 
     return NextResponse.json({ success: true, message: "Event and registrations deleted" });

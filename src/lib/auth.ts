@@ -59,7 +59,7 @@ export async function getCurrentUser(): Promise<User | null> {
     const payload = await verifySessionToken(token);
     if (!payload?.userId) return null;
 
-    const user = db.findOne("users", (u) => u.id === payload.userId);
+    const user = await db.findOne("users", (u) => u.id === payload.userId);
     return user || null;
   } catch {
     return null;

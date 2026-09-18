@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Booking ID is required" }, { status: 400 });
     }
 
-    const booking = db.findOne("bookings", (b) => b.id === bookingId);
+    const booking = await db.findOne("bookings", (b) => b.id === bookingId);
     if (!booking) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const updated = db.update("bookings", bookingId, {
+    const updated = await db.update("bookings", bookingId, {
       bookingStatus: "CANCELLED",
       paymentStatus: booking.paymentStatus === "COMPLETED" ? "REFUNDED" : "FAILED",
     });

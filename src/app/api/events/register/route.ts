@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const event = db.findOne("events", (e) => e.id === eventId);
+    const event = await db.findOne("events", (e) => e.id === eventId);
     if (!event) {
       return NextResponse.json({ error: "Tournament/Event not found" }, { status: 404 });
     }
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     // Check duplicate phone
-    const existing = db.findOne(
+    const existing = await db.findOne(
       "event_registrations",
       (r) => r.eventId === eventId && r.playerPhone === playerPhone
     );
@@ -51,8 +51,8 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    db.insert("event_registrations", registration);
-    db.update("events", eventId, {
+    await db.insert("event_registrations", registration);
+    await db.update("events", eventId, {
       currentParticipants: event.currentParticipants + 1,
     });
 

@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const zone = db.findOne("gaming_zones", (z) => z.id === zoneId);
+    const zone = await db.findOne("gaming_zones", (z) => z.id === zoneId);
     if (!zone) {
       return NextResponse.json({ error: "Invalid gaming zone" }, { status: 404 });
     }
@@ -38,12 +38,12 @@ export async function POST(request: Request) {
     const endTimeStr = endH.toString().padStart(2, "0") + ":00";
 
     // 1. Check real station availability
-    const stations = db.findMany(
+    const stations = await db.findMany(
       "stations",
       (s) => s.zoneId === zoneId && s.status === "AVAILABLE"
     );
 
-    const existingBookings = db.findMany(
+    const existingBookings = await db.findMany(
       "bookings",
       (b) =>
         b.bookingDate === bookingDate &&
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     let validOffer = null;
 
     if (offerCode) {
-      const offer = db.findOne(
+      const offer = await db.findOne(
         "offers",
         (o) =>
           o.code.toUpperCase() === offerCode.toUpperCase() &&
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     let userId = user?.id;
     if (!userId) {
       // Find or create customer
-      const existingUser = db.findOne(
+      const existingUser = await db.findOne(
         "users",
         (u) =>
           (customerPhone && u.phone === customerPhone) ||
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        db.insert("users", newUser);
+        await db.insert("users", newUser);
         userId = newUser.id;
       }
     }
@@ -169,13 +169,13 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    db.insert("bookings", newBooking);
+    await db.insert("bookings", newBooking);
 
     // Award loyalty XP: 50 XP per hour
     const earnedXp = parseInt(durationHours, 10) * 50;
-    const currentUser = db.findOne("users", (u) => u.id === userId);
+    const currentUser = await db.findOne("users", (u) => u.id === userId);
     if (currentUser) {
-      db.update("users", userId, { cosmosXp: (currentUser.cosmosXp || 0) + earnedXp });
+      await db.update("users", userId, { cosmosXp: (currentUser.cosmosXp || 0) + earnedXp });
     }
 
     return NextResponse.json({

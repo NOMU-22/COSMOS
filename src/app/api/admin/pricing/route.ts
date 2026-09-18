@@ -5,7 +5,7 @@ import { PricingTier } from "@/types";
 
 export async function GET() {
   try {
-    const pricing = db.findMany("pricing_tiers");
+    const pricing = await db.findMany("pricing_tiers");
     return NextResponse.json({ pricing });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to fetch pricing" }, { status: 500 });
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       isActive: isActive !== false,
     };
 
-    db.insert("pricing_tiers", newTier);
+    await db.insert("pricing_tiers", newTier);
     return NextResponse.json({ success: true, pricingTier: newTier });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to create pricing tier" }, { status: 500 });
@@ -52,7 +52,7 @@ export async function PUT(request: Request) {
       updates.features = JSON.stringify(updates.features);
     }
 
-    const updated = db.update("pricing_tiers", id, updates);
+    const updated = await db.update("pricing_tiers", id, updates);
     return NextResponse.json({ success: true, pricingTier: updated });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to update pricing tier" }, { status: 500 });
@@ -68,7 +68,7 @@ export async function DELETE(request: Request) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    db.delete("pricing_tiers", id);
+    await db.delete("pricing_tiers", id);
     return NextResponse.json({ success: true, message: "Pricing tier deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to delete pricing tier" }, { status: 500 });

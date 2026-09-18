@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const zoneId = searchParams.get("zoneId");
-    let stations = db.findMany("stations");
+    let stations = await db.findMany("stations");
     if (zoneId) {
       stations = stations.filter((s) => s.zoneId === zoneId);
     }
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       name: name || `Station ${stationNumber}`,
       status: status || "AVAILABLE",
     };
-    db.insert("stations", newStation);
+    await db.insert("stations", newStation);
     return NextResponse.json({ success: true, station: newStation });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to create station" }, { status: 500 });
@@ -46,7 +46,7 @@ export async function PUT(request: Request) {
     if (!user || user.role !== "ADMIN") return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     const { id, ...updates } = await request.json();
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
-    const updated = db.update("stations", id, updates);
+    const updated = await db.update("stations", id, updates);
     return NextResponse.json({ success: true, station: updated });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to update station" }, { status: 500 });
@@ -60,7 +60,7 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
-    db.delete("stations", id);
+    await db.delete("stations", id);
     return NextResponse.json({ success: true, message: "Station deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to delete station" }, { status: 500 });

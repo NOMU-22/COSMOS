@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     if (email) {
-      const existingEmail = db.findOne("users", (u) => u.email === email.toLowerCase());
+      const existingEmail = await db.findOne("users", (u) => u.email === email.toLowerCase());
       if (existingEmail) {
         return NextResponse.json(
           { error: "An account with this email already exists" },
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     }
 
     if (phone) {
-      const existingPhone = db.findOne("users", (u) => u.phone === phone);
+      const existingPhone = await db.findOne("users", (u) => u.phone === phone);
       if (existingPhone) {
         return NextResponse.json(
           { error: "An account with this phone number already exists" },
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    db.insert("users", newUser);
+    await db.insert("users", newUser);
 
     const token = await createSessionToken({
       userId: newUser.id,

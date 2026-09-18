@@ -12,8 +12,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search")?.toLowerCase() || "";
 
-    const customers = db.findMany("users", (u) => u.role === "CUSTOMER");
-    const allBookings = db.findMany("bookings");
+    const customers = await db.findMany("users", (u) => u.role === "CUSTOMER");
+    const allBookings = await db.findMany("bookings");
 
     const enrichedCustomers = customers.map((cust) => {
       const custBookings = allBookings.filter(

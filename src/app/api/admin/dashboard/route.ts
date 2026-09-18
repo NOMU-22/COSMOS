@@ -10,10 +10,10 @@ export async function GET() {
     }
 
     const todayStr = new Date().toISOString().split("T")[0];
-    const allBookings = db.findMany("bookings");
-    const allCustomers = db.findMany("users", (u) => u.role === "CUSTOMER");
-    const activeOffers = db.findMany("offers", (o) => o.status === "PUBLISHED");
-    const upcomingEvents = db.findMany("events", (e) => e.status !== "DRAFT");
+    const allBookings = await db.findMany("bookings");
+    const allCustomers = await db.findMany("users", (u) => u.role === "CUSTOMER");
+    const activeOffers = await db.findMany("offers", (o) => o.status === "PUBLISHED");
+    const upcomingEvents = await db.findMany("events", (e) => e.status !== "DRAFT");
 
     const todayBookings = allBookings.filter((b) => b.bookingDate === todayStr && b.bookingStatus !== "CANCELLED");
     const upcomingBookings = allBookings.filter((b) => b.bookingDate >= todayStr && b.bookingStatus !== "CANCELLED");

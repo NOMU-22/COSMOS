@@ -5,8 +5,8 @@ import { GamingZone, Station } from "@/types";
 
 export async function GET() {
   try {
-    const zones = db.findMany("gaming_zones");
-    const stations = db.findMany("stations");
+    const zones = await db.findMany("gaming_zones");
+    const stations = await db.findMany("stations");
     return NextResponse.json({ zones, stations });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to fetch zones" }, { status: 500 });
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       displayOrder: parseInt(displayOrder || "0", 10),
     };
 
-    db.insert("gaming_zones", newZone);
+    await db.insert("gaming_zones", newZone);
 
     // Create stations
     for (let i = 1; i <= newZone.totalStations; i++) {
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
         name: `${newZone.name} Station #${i.toString().padStart(2, "0")}`,
         status: "AVAILABLE",
       };
-      db.insert("stations", station);
+      await db.insert("stations", station);
     }
 
     return NextResponse.json({ success: true, zone: newZone });
@@ -63,7 +63,7 @@ export async function PUT(request: Request) {
     const { id, ...updates } = await request.json();
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    const updated = db.update("gaming_zones", id, updates);
+    const updated = await db.update("gaming_zones", id, updates);
     return NextResponse.json({ success: true, zone: updated });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to update gaming zone" }, { status: 500 });
@@ -79,11 +79,11 @@ export async function DELETE(request: Request) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    db.delete("gaming_zones", id);
+    await db.delete("gaming_zones", id);
     // Delete associated stations
-    const stations = db.findMany("stations", (s) => s.zoneId === id);
+    const stations = await db.findMany("stations", (s) => s.zoneId === id);
     for (const s of stations) {
-      db.delete("stations", s.id);
+      await db.delete("stations", s.id);
     }
 
     return NextResponse.json({ success: true, message: "Zone and stations deleted" });

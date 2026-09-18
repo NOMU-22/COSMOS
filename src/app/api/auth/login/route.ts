@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     const cleanIdentifier = identifier.trim().toLowerCase();
-    const user = db.findOne(
+    const user = await db.findOne(
       "users",
       (u) =>
         (u.email?.toLowerCase() === cleanIdentifier) ||

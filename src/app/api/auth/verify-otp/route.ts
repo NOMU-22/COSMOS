@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const cleanOtp = otp.trim();
 
     // Find valid OTP record
-    const otpRecord = db.findOne(
+    const otpRecord = await db.findOne(
       "verification_otps",
       (o) =>
         o.identifier === cleanPhone &&
@@ -34,10 +34,10 @@ export async function POST(request: Request) {
     }
 
     // Delete used OTP
-    db.delete("verification_otps", otpRecord.id);
+    await db.delete("verification_otps", otpRecord.id);
 
     // Check if user already exists
-    let user = db.findOne("users", (u) => u.phone === cleanPhone);
+    let user = await db.findOne("users", (u) => u.phone === cleanPhone);
 
     if (!user) {
       // Auto register user if new
@@ -54,11 +54,11 @@ export async function POST(request: Request) {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      db.insert("users", user);
+      await db.insert("users", user);
     } else {
       // Mark phone as verified if not already
       if (!user.isPhoneVerified) {
-        db.update("users", user.id, { isPhoneVerified: true });
+        await db.update("users", user.id, { isPhoneVerified: true });
         user.isPhoneVerified = true;
       }
     }

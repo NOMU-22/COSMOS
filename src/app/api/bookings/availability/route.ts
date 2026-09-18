@@ -16,19 +16,19 @@ export async function GET(request: Request) {
       );
     }
 
-    const zone = db.findOne("gaming_zones", (z) => z.id === zoneId);
+    const zone = await db.findOne("gaming_zones", (z) => z.id === zoneId);
     if (!zone) {
       return NextResponse.json({ error: "Invalid gaming zone" }, { status: 404 });
     }
 
     // Get all stations for this zone
-    const stations = db.findMany(
+    const stations = await db.findMany(
       "stations",
       (s) => s.zoneId === zoneId && s.status === "AVAILABLE"
     );
 
     // Get existing confirmed bookings for this date and zone
-    const existingBookings = db.findMany(
+    const existingBookings = await db.findMany(
       "bookings",
       (b) =>
         b.bookingDate === date &&

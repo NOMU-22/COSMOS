@@ -9,14 +9,14 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const bookings = db
+    const bookings = (await db
       .findMany(
         "bookings",
         (b) =>
           b.userId === user.id ||
           (user.phone ? b.customerPhone === user.phone : false) ||
           (user.email ? b.customerEmail === user.email : false)
-      )
+      ))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     const now = new Date();

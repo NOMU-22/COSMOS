@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    db.insert("verification_otps", newOtp);
+    await db.insert("verification_otps", newOtp);
 
     // In production, send via SMS gateway. Return preview OTP in development for instant tester convenience.
     console.log(`[COSMOS OTP] Sent OTP ${otpCode} to ${cleanPhone}`);

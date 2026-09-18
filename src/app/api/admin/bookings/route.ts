@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const status = searchParams.get("status");
     const zoneId = searchParams.get("zoneId");
 
-    let bookings = db.findMany("bookings");
+    let bookings = await db.findMany("bookings");
 
     if (date) {
       bookings = bookings.filter((b) => b.bookingDate === date);
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       specialRequests,
     } = body;
 
-    const zone = db.findOne("gaming_zones", (z) => z.id === zoneId);
+    const zone = await db.findOne("gaming_zones", (z) => z.id === zoneId);
     if (!zone) {
       return NextResponse.json({ error: "Invalid gaming zone" }, { status: 400 });
     }
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    db.insert("bookings", newBooking);
+    await db.insert("bookings", newBooking);
 
     return NextResponse.json({ success: true, booking: newBooking });
   } catch (error: any) {
@@ -122,7 +122,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Booking ID is required" }, { status: 400 });
     }
 
-    const updated = db.update("bookings", id, updates);
+    const updated = await db.update("bookings", id, updates);
     if (!updated) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }

@@ -5,7 +5,7 @@ import { Game } from "@/types";
 
 export async function GET() {
   try {
-    const games = db.findMany("games");
+    const games = await db.findMany("games");
     return NextResponse.json({ games });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to fetch games" }, { status: 500 });
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       };
     }
 
-    db.insert("games", newGame);
+    await db.insert("games", newGame);
     return NextResponse.json({ success: true, game: newGame });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to add game" }, { status: 500 });
@@ -123,7 +123,7 @@ export async function PUT(request: Request) {
     }
 
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
-    const updated = db.update("games", id, updates);
+    const updated = await db.update("games", id, updates);
     return NextResponse.json({ success: true, game: updated });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to update game" }, { status: 500 });
@@ -139,7 +139,7 @@ export async function DELETE(request: Request) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    db.delete("games", id);
+    await db.delete("games", id);
     return NextResponse.json({ success: true, message: "Game deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to delete game" }, { status: 500 });
